@@ -6,6 +6,7 @@ package quiz.master;
  */
 import java.sql.*;
 import javax.swing.*;
+import java.awt.event.*;
 public class login extends javax.swing.JFrame {
 
     
@@ -36,7 +37,6 @@ public class login extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("LOGIN");
-        setPreferredSize(new java.awt.Dimension(800, 500));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setPreferredSize(new java.awt.Dimension(830, 530));
@@ -75,11 +75,11 @@ public class login extends javax.swing.JFrame {
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(0, 102, 102));
-        jLabel2.setText("LOGIN");
+        jLabel2.setText("Login");
 
         jLabel3.setBackground(new java.awt.Color(102, 102, 102));
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel3.setText("User Name");
+        jLabel3.setText("User Name*");
 
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -89,7 +89,7 @@ public class login extends javax.swing.JFrame {
 
         jLabel4.setBackground(new java.awt.Color(102, 102, 102));
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel4.setText("Password");
+        jLabel4.setText("Password*");
 
         jButton1.setBackground(new java.awt.Color(0, 102, 102));
         jButton1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -213,38 +213,35 @@ public class login extends javax.swing.JFrame {
 
     // Check credentials against the database
     if (isValid) {
-        try {
-            Class.forName("com.mysql.jdbc.Driver"); // Use the updated JDBC driver
-            try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/quiz master", "root", "")) {
-                // Use a PreparedStatement to prevent SQL injection
-                String selectQuery = "SELECT * FROM User WHERE User_Name = ? AND Password = ?";
-                try (PreparedStatement pstmt = con.prepareStatement(selectQuery)) {
-                    pstmt.setString(1, username);
-                    pstmt.setString(2, password);
+        try{
+        // Use Singleton instance for database connection
+        Connection con = DatabaseConnection.getInstance().getConnection();
+        
+        String query = "SELECT User_ID, User_Name FROM User WHERE User_Name = ? AND Password = ?";
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+            ResultSet rs = pstmt.executeQuery();
 
-                    // Execute the select query
-                    ResultSet rs = pstmt.executeQuery();
-
-                    if (rs.next()) {
-                        // Successful sign in
-                        JOptionPane.showMessageDialog(this, "Sign-in successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                        // Proceed to the next screen or functionality
-                    } else {
-                        // Invalid credentials
-                        JOptionPane.showMessageDialog(this, "Invalid username or password.", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-            } catch (SQLException e) {
-                System.out.println("SQL Exception: " + e.getMessage());
-                JOptionPane.showMessageDialog(this, "Database connection error. Please try again later.", "Error", JOptionPane.ERROR_MESSAGE);
+            if (rs.next()) {
+                // Retrieve the User_ID
+                JOptionPane.showMessageDialog(this, "Sign-in successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                AdminorUser au=new AdminorUser();
+                au.setVisible(true);
+                this.dispose();
+                // Pass both username and ID to First_Page
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid username or password.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (ClassNotFoundException e) {
+        }
+    }catch(Exception e){
             System.out.println("MySQL JDBC Driver not found.");
             JOptionPane.showMessageDialog(this, "Database driver not found. Please contact support.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }
+        
+    
     }//GEN-LAST:event_jButton1ActionPerformed
-
+    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Right;

@@ -77,7 +77,7 @@ public class SignUp extends javax.swing.JFrame {
 
         jLabel3.setBackground(new java.awt.Color(102, 102, 102));
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel3.setText("Full Name");
+        jLabel3.setText("Full Name*");
 
         jTextField2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -87,11 +87,11 @@ public class SignUp extends javax.swing.JFrame {
 
         jLabel4.setBackground(new java.awt.Color(102, 102, 102));
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel4.setText("Password");
+        jLabel4.setText("Password*");
 
         jLabel5.setBackground(new java.awt.Color(102, 102, 102));
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel5.setText("Email");
+        jLabel5.setText("Email*");
 
         jLabel7.setText("I have an Account");
 
@@ -117,6 +117,18 @@ public class SignUp extends javax.swing.JFrame {
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField1ActionPerformed(evt);
+            }
+        });
+
+        UL.setForeground(new java.awt.Color(255, 51, 51));
+
+        EL.setForeground(new java.awt.Color(255, 0, 0));
+
+        PL.setForeground(new java.awt.Color(255, 0, 0));
+
+        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField3ActionPerformed(evt);
             }
         });
 
@@ -175,7 +187,7 @@ public class SignUp extends javax.swing.JFrame {
                 .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(EL, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -286,23 +298,24 @@ public class SignUp extends javax.swing.JFrame {
         // Check if all validations passed
         if (isValid) {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/quiz master", "root", "")) {
-                // Create statement for executing the SQL commands
-                Statement stmt = con.createStatement();
-                
-                // Insert into stdinfo, excluding the auto-incremented User_ID
-                String insertQuery = "INSERT INTO user (User_Name, User_Email, Password) VALUES ('" + username + "', '" + email + "', '" + password + "')";
-                stmt.executeUpdate(insertQuery); // Execute the insert
+            // Singleton Database Connection Instance
+            Connection con = DatabaseConnection.getInstance().getConnection();
 
+            // Use PreparedStatement for SQL injection safety
+            String insertQuery = "INSERT INTO user (User_Name, User_Email, Password) VALUES (?, ?, ?)";
+            try (PreparedStatement pstmt = con.prepareStatement(insertQuery)) {
+                pstmt.setString(1, username);
+                pstmt.setString(2, email);
+                pstmt.setString(3, password);
+                pstmt.executeUpdate();
 
                 // Registration successful
                 javax.swing.JOptionPane.showMessageDialog(this, "Sign-up successful!", "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             } catch (SQLException e) {
                 System.out.println("SQL Exception: " + e.getMessage());
             }
-        } catch (ClassNotFoundException e) {
-            System.out.println("MySQL JDBC Driver not found.");
+        } catch (Exception e) {
+            System.out.println("Database connection error.");
         }
     } else {
         // Show validation errors if any
@@ -313,16 +326,20 @@ public class SignUp extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        SignUp SignUpFrame= new SignUp();
-        SignUpFrame.setVisible(true);
-        SignUpFrame.pack();
-        SignUpFrame.setLocationRelativeTo(null);
+        login loginFrame= new login();
+        loginFrame.setVisible(true);
+        loginFrame.pack();
+        loginFrame.setLocationRelativeTo(null);
         this.dispose();
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField3ActionPerformed
 
     
     public static void main(String args[]) {
