@@ -46,7 +46,7 @@ public class login extends javax.swing.JFrame {
         Right.setPreferredSize(new java.awt.Dimension(400, 500));
 
         jLabel6.setBackground(new java.awt.Color(0, 102, 102));
-        jLabel6.setFont(new java.awt.Font("Segoe UI Black", 1, 48)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Stencil", 1, 48)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("QUIZ MASTER");
 
@@ -57,14 +57,14 @@ public class login extends javax.swing.JFrame {
             .addGroup(RightLayout.createSequentialGroup()
                 .addGap(23, 23, 23)
                 .addComponent(jLabel6)
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addContainerGap(47, Short.MAX_VALUE))
         );
         RightLayout.setVerticalGroup(
             RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(RightLayout.createSequentialGroup()
                 .addGap(186, 186, 186)
                 .addComponent(jLabel6)
-                .addContainerGap(248, Short.MAX_VALUE))
+                .addContainerGap(265, Short.MAX_VALUE))
         );
 
         jPanel1.add(Right);
@@ -224,9 +224,10 @@ public class login extends javax.swing.JFrame {
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
+                String id=rs.getString("User_ID");
                 // Retrieve the User_ID
                 JOptionPane.showMessageDialog(this, "Sign-in successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                AdminorUser au=new AdminorUser();
+                AdminorUser au=new AdminorUser(id);
                 au.setVisible(true);
                 this.dispose();
                 // Pass both username and ID to First_Page
